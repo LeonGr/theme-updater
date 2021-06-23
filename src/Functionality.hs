@@ -29,8 +29,6 @@ updateParts = do
     putStrLn "### Updating dunst ###"
     callCommand "killall dunst"
     callCommand "dunst &"
-    putStrLn "### Updating vis ###"
-    callCommand "sh ~/dotfiles/vis/vis_script.sh"
     putStrLn "### Done, manually reload firefox and vim ###"
 
 startPicker :: IO ()
