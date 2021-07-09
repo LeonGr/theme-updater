@@ -1,21 +1,39 @@
 module Functionality where
 
 import System.Process
+import System.Environment (getEnv)
 import Text.Read (readMaybe)
+import Data.Text
 
 updateTheme :: FilePath -> String -> Int -> IO ()
 updateTheme path backend alpha = do
     callWal path backend alpha
     updateParts
 
+data Shell = Zsh | Fish | Other deriving Show
+getShell :: String -> Shell
+getShell path | pack "zsh"  `isInfixOf` pack path = Zsh
+getShell path | pack "fish" `isInfixOf` pack path = Fish
+getShell _                                        = Other
+
 addToHistory :: FilePath -> String -> Int -> IO ()
 addToHistory path backend alpha = do
     putStrLn "### Picker used, adding command with flags to history ###"
     let command = "theme-updater -p " ++ path ++ " -a " ++ show alpha ++ " -b " ++ backend
     putStrLn ("Full command: " ++ command)
-    -- Replace last command in history with command including options
-    callCommand ("cmd=$(tail -n 1 ~/.zsh_history | sed -e 's|;.*$|;" ++ command ++ "|g'); echo $cmd >> ~/.zsh_history; echo ''")
-    putStrLn "Press return to reload history"
+
+    shell <- getEnv "SHELL"
+
+    case getShell shell of
+      Zsh   -> do { -- Replace last command in history with command including options
+                  ; callCommand ("cmd=$(tail -n 1 ~/.zsh_history | sed -e 's|;.*$|;" ++ command ++ "|g'); echo $cmd >> ~/.zsh_history; echo ''")
+                  ; putStrLn "Press return to reload history"
+                  }
+      Fish  -> do { -- Replace last command in history with command including options
+                  ; callCommand ("cmd=$(tail -n 2 ~/.local/share/fish/fish_history | sed -e 's|- cmd:.*$|- cmd: " ++ command ++ "|g'); echo -e \"$cmd\" >> ~/.local/share/fish/fish_history; echo ''")
+                  ; putStrLn "Call `history merge` to reload history"
+                  }
+      Other -> putStrLn ("Shell " ++ shell ++ " not supported.")
 
 callWal :: FilePath -> String -> Int -> IO ()
 callWal path backend alpha = do

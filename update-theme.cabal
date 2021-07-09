@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.2.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 
@@ -33,6 +33,7 @@ library
       base >=4.7 && <5
     , optparse-applicative
     , process
+    , text
   default-language: Haskell2010
 
 executable update-theme
@@ -46,6 +47,7 @@ executable update-theme
       base >=4.7 && <5
     , optparse-applicative
     , process
+    , text
     , update-theme
   default-language: Haskell2010
 
@@ -61,5 +63,6 @@ test-suite update-theme-test
       base >=4.7 && <5
     , optparse-applicative
     , process
+    , text
     , update-theme
   default-language: Haskell2010
