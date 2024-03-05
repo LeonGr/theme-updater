@@ -8,6 +8,7 @@ import Data.Text
 updateTheme :: FilePath -> String -> Int -> IO ()
 updateTheme path backend alpha = do
     callWal path backend alpha
+    setColorschemeVariable "dark"
     updateParts
 
 data Shell = Zsh | Fish | Other deriving Show
@@ -48,6 +49,11 @@ updateParts = do
     callCommand "killall dunst"
     callCommand "dunst &"
     putStrLn "### Done, manually reload firefox and vim ###"
+
+setColorschemeVariable :: String -> IO ()
+setColorschemeVariable value = do
+    putStrLn "### Setting /opt/theme_colorscheme"
+    callCommand ("echo '" ++ value ++ "' > /opt/theme_colorscheme")
 
 startPicker :: IO ()
 startPicker = do
